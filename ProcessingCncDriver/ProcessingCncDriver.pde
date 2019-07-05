@@ -5,10 +5,10 @@ String motorByteArrayFileName = "../1.stp";
 float speedScale = 0.0003;              // typisk fra mm/min i F360 til mm/sec som er formatet i Processing CNC driver
 boolean plott3D = false;
 boolean plott3Di = true;
-double stepFrequency = 1500.0;          // loop frequency in Arduino (Hz)
+double stepFrequency = 3000.0;          // loop frequency in Arduino (Hz)
 
 // Maskinparametre
-double numbOfMicrostep = 4.0;                       // Can be set on motor driver (org8)                         
+double numbOfMicrostep = 8.0;                       // Can be set on motor driver (org8)                         
 double stepSizeInMM = 4/(200.0*numbOfMicrostep);    // Screw pitch (mm/revolution) / 
 // (motor step per revolution * numbOfMicrostep) (0.005) (org 2.5)
 // Max possible linear speed = stepFrequency * stepSizeInMM - 7.5mm/sec
@@ -26,7 +26,7 @@ int totalNoOfSteps;
 
 void setup()
 {
-  size(600, 500, P3D);
+  size(1600, 1200, P3D);
   cameraSetup();
   
   lesFil_FiltrerTil_gCodeArrayOnlyLinesOfG01(gCodeInFileName); 
@@ -37,8 +37,10 @@ void setup()
   
   parse_interpolPointArray_to_motorByteArray();  
 
+  System.out.printf("\nMax/min X = %.2fmm/%.2fmm, max/min Y = %.2fmm/%.2fmm, max/min Z = %.2fmm/%.2fmm \n \n", maxX, minX, maxY, minY, maxZ, minZ);
+
   printAll(0, 0.01); // debug
-  print_gCodeArrayOnlyLinesOfG01(0, 3);
+  print_gCodeArrayOnlyLinesOfG01(0, 3);  
 }
 
 //***********************************************************************

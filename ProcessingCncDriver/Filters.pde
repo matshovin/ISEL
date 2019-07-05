@@ -1,3 +1,12 @@
+double maxX = -10000;
+double minX = 10000;
+
+double maxY = -10000;
+double minY = 10000;
+
+double maxZ = -10000;
+double minZ = 10000;  
+
 
 void lesFil_FiltrerTil_gCodeArrayOnlyLinesOfG01(String gCodeFileInName)
 {
@@ -73,7 +82,7 @@ void lesFil_FiltrerTil_gCodeArrayOnlyLinesOfG01(String gCodeFileInName)
 //****************************************************************
 
 void parse_gCodeArrayOnlyLinesOfG01_til_lineArrayXYZT()
-{
+{ 
   lineArrayXYZT = new double[gCodeArrayOnlyLinesOfG01.length][4];
 
   double lineLengthMM; // line length for each G01 line in mm
@@ -102,8 +111,23 @@ void parse_gCodeArrayOnlyLinesOfG01_til_lineArrayXYZT()
 
       lineArrayXYZT[L][3] = (lineLengthMM / F) + lineArrayXYZT[L-1][3]; // setter inn slutt tid
     }
+
+    if (lineArrayXYZT[L][0] > maxX)
+      maxX = lineArrayXYZT[L][0];
+    if (lineArrayXYZT[L][0] < minX)
+      minX = lineArrayXYZT[L][0];  
+
+    if (lineArrayXYZT[L][1] > maxY)
+      maxY = lineArrayXYZT[L][1];
+    if (lineArrayXYZT[L][1] < minY)
+      minY = lineArrayXYZT[L][1];  
+
+    if (lineArrayXYZT[L][2] > maxZ)
+      maxZ = lineArrayXYZT[L][2];
+    if (lineArrayXYZT[L][2] < minZ)
+      minZ = lineArrayXYZT[L][2];
   }
-  
+
   println("G01 code overført til format XYZT), antall linjer = " + lineArrayXYZT.length); 
   System.out.printf("   Total run time = %.2f sec / %.2f min \n", lineArrayXYZT[lineArrayXYZT.length-1][3], lineArrayXYZT[lineArrayXYZT.length-1][3]/60.0);
 }
@@ -113,7 +137,7 @@ void parse_gCodeArrayOnlyLinesOfG01_til_lineArrayXYZT()
 void parse_lineArrayXYZT_to_interpolPointArray()
 {
   // parsing from lineArrayXYZT (short array) to interpolPointArray (long array)
-  
+
   totalNoOfSteps = (int)( lineArrayXYZT[lineArrayXYZT.length-1][3] * stepFrequency ); 
   interpolPointArray = new double[totalNoOfSteps][3];
 
@@ -140,7 +164,7 @@ void parse_lineArrayXYZT_to_interpolPointArray()
     while (currentTime > lineArrayXYZT[gCodeLineNo][3]) // laster inn ny gCodeLinje (linjesegment)
       gCodeLineNo++;
   }
-  
+
   println("XYZT er interpolert til " + totalNoOfSteps + " ant XYZ steps" ); 
   println("   Step size = " + stepSizeInMM + " (mm)");
   println("   Valgt mikrostep frekvens = " + stepFrequency + " (Hz) - pulslengde = " + r(1.0*1000/(2.0*stepFrequency)) + " mSec");
@@ -222,7 +246,7 @@ void parse_interpolPointArray_to_motorByteArray()
     yOld = y;
     zOld = z;
   }
-  
+
   println("Alle interpolerte XYZsteps er overført til motorsteps (bytes)");  
   saveBytes(motorByteArrayFileName, motorByteArray);
   println("Motorsteps er lagret til fil: " + motorByteArrayFileName);
